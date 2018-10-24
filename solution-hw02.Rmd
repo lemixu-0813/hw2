@@ -4,131 +4,161 @@ author: "Your name^[affiliation]"
 date: '`r format(Sys.time(), "%d %m, %Y")`'
 output: pdf_document
 ---
-
-Questions in this problem set are taken from *Kleiber, C., & Zeileis, A. (2008). Applied econometrics with R. Springer Science & Business Media, p. 54.*
-
-# Question 1
-
-Create a square matrix, say $A$, with entries $a_{ii} = 2$, $i=2,..., n - 1$, $a_{11} = a_{nn} = 1$, $a_{i, i+1} = a_{i, i-1} = - 1$, and $a_{ij} = 0$ elsewhere. (Where does this matrix occur in econometrics?) 
+  
+  
+  Questions in this problem set are taken from *Kleiber, C., & Zeileis, A. (2008). Applied econometrics with R. Springer Science & Business Media, p. 54.*
+  
+  # Question 1
+  
+  Create a square matrix, say $A$, with entries $a_{ii} = 2$, $i=2, ..., n - 1$, $a_{11} = a_{nn} = 1$, $a_{i, i+1} = a_{i, i-1} = - 1$, and $a_{ij} = 0$ elsewhere. (Where does this matrix occur in econometrics?) 
 
 ```{r}
-# Write here your code
+n = 10
+diag(c(1, rep(2, n - 2), 1), n) + rbind(rep(0, n), diag(-1, n - 1, n)) + t(rbind(rep(0,
+                                                                                     n), diag(-1, n - 1, n)))
 ```
 <!-- Write your answer to (1) Here -->
-
-
-
-
-
-<!-- End of answer to (1) -->
-
-# Question 2
-
-"PARADE"" is the Sunday newspaper magazine supplementing the Sunday or weekend edition of some 500 daily newspapers in the United States of America. An important yearly feature is an article providing information on some 120–150 "randomly"" selected US citizens, indicating their profession, hometown and state, and their yearly earnings. The ```Parade2005``` data contain the 2005 version, amended by a variable indicating celebrity status (motivated by substantial oversampling of celebrities in these data).
+  
+  
+  
+  
+  
+  <!-- End of answer to (1) -->
+  
+  # Question 2
+  
+  "PARADE"" is the Sunday newspaper magazine supplementing the Sunday or weekend edition of some 500 daily newspapers in the United States of America. An important yearly feature is an article providing information on some 120-150 "randomly"" selected US citizens, indicating their profession, hometown and state, and their yearly earnings. The ```Parade2005``` data contain the 2005 version, amended by a variable indicating celebrity status (motivated by substantial oversampling of celebrities in these data).
 For the ```Parade2005``` data:
-
-## a)
-
-Determine the mean earnings in California. Explain the result.
+  
+  ## a)
+  
+  Determine the mean earnings in California. Explain the result.
 
 ```{r}
-# Write here your code
+data("Parade2005",package="AER")
+pde<-Parade2005
+head(pde)
+nrow(pde)
+cal <- subset(pde, state == "CA")
+mean(cal$earnings)
+aggregate(earnings~state,pde,mean)
+tapply(pde$earnings,pde$state,mean)
+mean(subset(pde,state=='CA')$earnings)
 ```
 
 <!-- Write your answer to (2a) Here -->
-
-
-
-
-
-
-
-<!-- End of answer to (2a) -->
-
-## b)
-
-Determine the number of individuals residing in Idaho. (What does this say about the data set?)
+  
+  
+  
+  
+  
+  
+  
+  <!-- End of answer to (2a) -->
+  
+  ## b)
+  
+  Determine the number of individuals residing in Idaho. (What does this say about the data set?)
 
 ```{r}
-# Write here your code
+nrow(subset(pde, state == "ID"))
+ida<-subset(pde,state=='ID')
+ida
 ```
 
 <!-- Write your answer to (2b) Here -->
-
-
-
-
-
-
-
-
-<!-- End of answer to (2b) -->
-
-## c)
-
-Determine the mean and the median earnings of celebrities. Comment.
+  
+  
+  
+  
+  
+  
+  
+  
+  <!-- End of answer to (2b) -->
+  
+  ## c)
+  
+  Determine the mean and the median earnings of celebrities. Comment.
 
 ```{r}
-# Write here your code
+options("scipen"=999)
+celeb<-subset(pde,celebrity=='yes')
+mean(celeb$earnings)
+median(celeb$earnings)
 ```
 
 <!-- Write your answer to (2c) Here -->
-
-
-
-
-
-
-
-
-
-<!-- End of answer to (2c) -->
-
-## d)
-
-Obtain boxplots of ```log(earnings)``` stratified by ```celebrity```. Comment.
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <!-- End of answer to (2c) -->
+  
+  ## d)
+  
+  Obtain boxplots of ```log(earnings)``` stratified by ```celebrity```. Comment.
 
 ```{r}
-# Write here your code
+notceleb <- subset(pde, celebrity == "no")
+boxplot(log(celeb$earnings), log(notceleb$earnings), main = "log(earnings)",
+        names = c("Celebrity", "Not Celebrity"))
 ```
 
 <!-- Write your answer to (2d) Here -->
-
-
-
-
-
-
-
-
-<!-- End of answer to (2d) -->
-
-
-# Question 3
-
-For the ```Parade2005``` data of the preceding exercise, obtain a kernel density estimate of the earnings for the full data set. It will be necessary
+  
+  
+  
+  
+  
+  
+  
+  
+  <!-- End of answer to (2d) -->
+  
+  
+  # Question 3
+  
+  For the ```Parade2005``` data of the preceding exercise, obtain a kernel density estimate of the earnings for the full data set. It will be necessary
 to transform the data to logarithms (why?). Comment on the result. Be
 sure to try out some arguments to ```density()```, in particular the plug-in
 bandwidth ```bw```.
 
 ```{r}
-# Write here your code
+library("KernSmooth")
+pde<-Parade2005
+summary(log(pde$earnings))
+pde_k05<-bkde(log(pde$earnings),bandwidth=0.05)
+pde_k1<-bkde(log(pde$earnings),bandwidth=0.1)
+pde_k2<-bkde(log(pde$earnings),bandwidth=0.2)
+pde_k3<-bkde(log(pde$earnings),bandwidth=0.3)
+par(mfrow=c(2,2))
+plot(pde_k05,type="l",ylab="density",xlab="log(earnings)",main="bandwidth 0.05")
+plot(pde_k1,type="l",ylab="density",xlab="log(earnings)",main="bandwidth 0.1")
+plot(pde_k2,type="l",ylab="density",xlab="log(earnings)",main="bandwidth 0.2")
+plot(pde_k3,type="l",ylab="density",xlab="log(earnings)",main="bandwidth 0.3")
+par(mfrow=c(1,1))
 ```
 
 <!-- Write your answer to (3) Here -->
-
-
-
-
-
-
-<!-- End of answer to (3) -->
-
-# Question 4
-
-Consider the ```CPS1988 data```, taken from Bierens and Ginther (2001).
+  
+  
+  
+  
+  
+  
+  <!-- End of answer to (3) -->
+  
+  # Question 4
+  
+  Consider the ```CPS1988 data```, taken from Bierens and Ginther (2001).
 (These data will be used for estimating an earnings equation in the next
-chapter.)
+  chapter.)
 
 ## a)
 
@@ -136,7 +166,12 @@ Obtain scatterplots of the logarithm of the real wage (```wage```) versus
 ```experience``` and versus ```education```.
 
 ```{r}
-# Write here your code
+data("CPS1988",package="AER")
+cps<-CPS1988
+head(cps)
+nrow(cps)
+plot(cps$experience,log(cps$wage),main="Experience")
+plot(cps$education,log(cps$wage))
 ```
 
 
@@ -153,7 +188,14 @@ a factor and obtain parallel boxplots of ```wage``` stratified by the levels
 of ```education```. Repeat for ```experience```.
 
 ```{r}
-# Write here your code
+summary(cps$education)
+ed <- factor(cps$education, levels = c(rep(0:18)), labels = c(rep(0:18)))
+plot(log(cps$wage) ~ ed, main = "log(wage) by level of education", xlab = "education (years)",
+     ylab = "log(wage)")
+summary(cps$experience)
+ex <- factor(cps$experience, levels = c(rep(-4:63)), labels = c(rep(-4:63)))
+plot(log(cps$wage) ~ ex, main = "log(wage) by level of experience", xlab = "experience (years)",
+     ylab = "log(wage)")
 ```
 
 
@@ -170,18 +212,16 @@ of ```education```. Repeat for ```experience```.
 The data set contains four additional factors, ```ethnicity, smsa, region, and parttime```. Obtain suitable graphical displays of log(```wage```) versus each of these factors.
 
 ```{r}
-# Write here your code
+par(mfrow = c(2, 2))
+plot(log(cps$wage) ~ cps$ethnicity, main = "log(wage) by ethnicity", xlab = "ethnicity",
+     ylab = "log(wage)")
+plot(log(cps$wage) ~ cps$smsa, main = "log(wage)
+by residence in standard
+metropolitan statistical area",
+     xlab = "smsa", ylab = "log(wage)")
+plot(log(cps$wage) ~ cps$region, main = "log(wage) by region", xlab = "region",
+     ylab = "log(wage)")
+plot(log(cps$wage) ~ cps$parttime, main = "log(wage) by parttime job", xlab = "parttime job",
+     ylab = "log(wage)")
+par(mfrow = c(1, 1))
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
