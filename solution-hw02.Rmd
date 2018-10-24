@@ -14,8 +14,8 @@ output: pdf_document
 
 ```{r}
 n = 10
-diag(c(1, rep(2, n - 2), 1), n) + rbind(rep(0, n), diag(-1, n - 1, n)) + t(rbind(rep(0,
-                                                                                     n), diag(-1, n - 1, n)))
+diag(c(1, rep(2, n - 2), 1), n) + rbind(rep(0, n), diag(-1, n - 1, n))
+      + t(rbind(rep(0,n), diag(-1, n - 1, n)))
 ```
 <!-- Write your answer to (1) Here -->
   
